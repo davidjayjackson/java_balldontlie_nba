@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oor:component-data
+    xmlns:oor="http://openoffice.org/2001/registry"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    oor:name="CalcAddIns" oor:package="org.openoffice.Office">
+  <node oor:name="AddInInfo">
+    <node oor:name="com.example.nba.NbaImpl" oor:op="replace">
+      <node oor:name="AddInFunctions">
+
+        <!-- =NBA_TEAMID(name_or_abbrev) -->
+        <node oor:name="nbaTeamId" oor:op="replace">
+          <prop oor:name="DisplayName"><value xml:lang="en">NBA_TEAMID</value></prop>
+          <prop oor:name="Description">
+            <value xml:lang="en">Resolves a team name or abbreviation to its numeric team id. Returns #LOADING, #NO_API_KEY, or #NOT_FOUND if unresolved.</value>
+          </prop>
+          <prop oor:name="Category"><value>Add-In</value></prop>
+          <prop oor:name="CompatibilityName"><value xml:lang="en">NBA_TEAMID</value></prop>
+          <node oor:name="Parameters">
+            <node oor:name="nameOrAbbrev" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">name_or_abbrev</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">Team full name, city, name, or abbreviation, e.g. "Lakers" or "LAL".</value>
+              </prop>
+            </node>
+          </node>
+        </node>
+
+        <!-- =NBA_TEAMS() -->
+        <node oor:name="nbaTeams" oor:op="replace">
+          <prop oor:name="DisplayName"><value xml:lang="en">NBA_TEAMS</value></prop>
+          <prop oor:name="Description">
+            <value xml:lang="en">Lists every NBA team as a spillable array (id, abbreviation, city, conference, division, full_name, name). Enter as an array formula (Ctrl+Shift+Enter) to see all rows.</value>
+          </prop>
+          <prop oor:name="Category"><value>Add-In</value></prop>
+          <prop oor:name="CompatibilityName"><value xml:lang="en">NBA_TEAMS</value></prop>
+        </node>
+
+        <!-- =NBA_PLAYERSEARCH(name) -->
+        <node oor:name="nbaPlayerSearch" oor:op="replace">
+          <prop oor:name="DisplayName"><value xml:lang="en">NBA_PLAYERSEARCH</value></prop>
+          <prop oor:name="Description">
+            <value xml:lang="en">Searches players by name; returns a spillable array (id, first_name, last_name, position, team) of up to 100 matches. Enter as an array formula.</value>
+          </prop>
+          <prop oor:name="Category"><value>Add-In</value></prop>
+          <prop oor:name="CompatibilityName"><value xml:lang="en">NBA_PLAYERSEARCH</value></prop>
+          <node oor:name="Parameters">
+            <node oor:name="name" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">name</value></prop>
+              <prop oor:name="Description"><value xml:lang="en">A full or partial player name.</value></prop>
+            </node>
+          </node>
+        </node>
+
+        <!-- =NBA_PLAYERID(full_name) -->
+        <node oor:name="nbaPlayerId" oor:op="replace">
+          <prop oor:name="DisplayName"><value xml:lang="en">NBA_PLAYERID</value></prop>
+          <prop oor:name="Description">
+            <value xml:lang="en">Resolves a player's full name to their numeric player id (the first, best-matching search result).</value>
+          </prop>
+          <prop oor:name="Category"><value>Add-In</value></prop>
+          <prop oor:name="CompatibilityName"><value xml:lang="en">NBA_PLAYERID</value></prop>
+          <node oor:name="Parameters">
+            <node oor:name="fullName" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">full_name</value></prop>
+              <prop oor:name="Description"><value xml:lang="en">Player name to search for, e.g. "LeBron James".</value></prop>
+            </node>
+          </node>
+        </node>
+
+        <!-- =NBA_GAMES(date_or_season; [team_id]) -->
+        <node oor:name="nbaGames" oor:op="replace">
+          <prop oor:name="DisplayName"><value xml:lang="en">NBA_GAMES</value></prop>
+          <prop oor:name="Description">
+            <value xml:lang="en">Lists games for a date or a season as a spillable array (date, home_team, home_score, away_team, away_score, status). Enter as an array formula.</value>
+          </prop>
+          <prop oor:name="Category"><value>Add-In</value></prop>
+          <prop oor:name="CompatibilityName"><value xml:lang="en">NBA_GAMES</value></prop>
+          <node oor:name="Parameters">
+            <node oor:name="dateOrSeason" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">date_or_season</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">An ISO date "YYYY-MM-DD" (games on that date) or a 4-digit season year "YYYY" (games in that season).</value>
+              </prop>
+            </node>
+            <node oor:name="teamId" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">team_id</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">Optional. A numeric team id (from NBA_TEAMID) to filter to. Only honored in season mode.</value>
+              </prop>
+            </node>
+          </node>
+        </node>
+
+        <!-- =NBA_SCORE(season; abbrev; [nth]) -->
+        <node oor:name="nbaScore" oor:op="replace">
+          <prop oor:name="DisplayName"><value xml:lang="en">NBA_SCORE</value></prop>
+          <prop oor:name="Description">
+            <value xml:lang="en">Returns the most recent (or Nth most recent) game result for a team in a season as a formatted string, e.g. "2024-04-10 LAL 112 - 108 BOS (W)".</value>
+          </prop>
+          <prop oor:name="Category"><value>Add-In</value></prop>
+          <prop oor:name="CompatibilityName"><value xml:lang="en">NBA_SCORE</value></prop>
+          <node oor:name="Parameters">
+            <node oor:name="season" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">season</value></prop>
+              <prop oor:name="Description"><value xml:lang="en">4-digit season year, e.g. "2024".</value></prop>
+            </node>
+            <node oor:name="abbrev" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">abbrev</value></prop>
+              <prop oor:name="Description"><value xml:lang="en">Team abbreviation, e.g. "LAL".</value></prop>
+            </node>
+            <node oor:name="nth" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">nth</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">Optional. 1 = most recent game (default), 2 = second most recent, etc.</value>
+              </prop>
+            </node>
+          </node>
+        </node>
+
+        <!-- =NBA_STANDINGS(season; [conference]) -->
+        <node oor:name="nbaStandings" oor:op="replace">
+          <prop oor:name="DisplayName"><value xml:lang="en">NBA_STANDINGS</value></prop>
+          <prop oor:name="Description">
+            <value xml:lang="en">Returns league standings for a season as a spillable array (conference, division, team, wins, losses, win_pct, conference_rank). Enter as an array formula.</value>
+          </prop>
+          <prop oor:name="Category"><value>Add-In</value></prop>
+          <prop oor:name="CompatibilityName"><value xml:lang="en">NBA_STANDINGS</value></prop>
+          <node oor:name="Parameters">
+            <node oor:name="season" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">season</value></prop>
+              <prop oor:name="Description"><value xml:lang="en">4-digit season year, e.g. "2024".</value></prop>
+            </node>
+            <node oor:name="conference" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">conference</value></prop>
+              <prop oor:name="Description"><value xml:lang="en">Optional. "East" or "West" to filter to one conference.</value></prop>
+            </node>
+          </node>
+        </node>
+
+        <!-- =NBA_TEAMRANK(season; abbrev) -->
+        <node oor:name="nbaTeamRank" oor:op="replace">
+          <prop oor:name="DisplayName"><value xml:lang="en">NBA_TEAMRANK</value></prop>
+          <prop oor:name="Description">
+            <value xml:lang="en">Returns a team's conference rank in a season.</value>
+          </prop>
+          <prop oor:name="Category"><value>Add-In</value></prop>
+          <prop oor:name="CompatibilityName"><value xml:lang="en">NBA_TEAMRANK</value></prop>
+          <node oor:name="Parameters">
+            <node oor:name="season" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">season</value></prop>
+              <prop oor:name="Description"><value xml:lang="en">4-digit season year, e.g. "2024".</value></prop>
+            </node>
+            <node oor:name="abbrev" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">abbrev</value></prop>
+              <prop oor:name="Description"><value xml:lang="en">Team abbreviation, e.g. "LAL".</value></prop>
+            </node>
+          </node>
+        </node>
+
+        <!-- =NBA_PLAYERSTAT(season; id; stat_key) -->
+        <node oor:name="nbaPlayerStat" oor:op="replace">
+          <prop oor:name="DisplayName"><value xml:lang="en">NBA_PLAYERSTAT</value></prop>
+          <prop oor:name="Description">
+            <value xml:lang="en">Returns a player's season-average value for a given stat (simple mean across the season's games; percentage fields are not attempt-weighted).</value>
+          </prop>
+          <prop oor:name="Category"><value>Add-In</value></prop>
+          <prop oor:name="CompatibilityName"><value xml:lang="en">NBA_PLAYERSTAT</value></prop>
+          <node oor:name="Parameters">
+            <node oor:name="season" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">season</value></prop>
+              <prop oor:name="Description"><value xml:lang="en">4-digit season year, e.g. "2024".</value></prop>
+            </node>
+            <node oor:name="id" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">id</value></prop>
+              <prop oor:name="Description"><value xml:lang="en">Numeric player id (from NBA_PLAYERID).</value></prop>
+            </node>
+            <node oor:name="statKey" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">stat_key</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">One of: pts, reb, ast, stl, blk, turnover, pf, fgm, fga, fg_pct, fg3m, fg3a, fg3_pct, ftm, fta, ft_pct, oreb, dreb, min.</value>
+              </prop>
+            </node>
+          </node>
+        </node>
+
+        <!-- =NBA_BOXSCORE(game_id) -->
+        <node oor:name="nbaBoxScore" oor:op="replace">
+          <prop oor:name="DisplayName"><value xml:lang="en">NBA_BOXSCORE</value></prop>
+          <prop oor:name="Description">
+            <value xml:lang="en">Returns the per-player box score for a game as a spillable array (player, team, min, pts, reb, ast, stl, blk, fg_pct, fg3_pct, ft_pct). Enter as an array formula.</value>
+          </prop>
+          <prop oor:name="Category"><value>Add-In</value></prop>
+          <prop oor:name="CompatibilityName"><value xml:lang="en">NBA_BOXSCORE</value></prop>
+          <node oor:name="Parameters">
+            <node oor:name="gameId" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">game_id</value></prop>
+              <prop oor:name="Description"><value xml:lang="en">Numeric game id.</value></prop>
+            </node>
+          </node>
+        </node>
+
+        <!-- =NBA_LASTERROR() -->
+        <node oor:name="nbaLastError" oor:op="replace">
+          <prop oor:name="DisplayName"><value xml:lang="en">NBA_LASTERROR</value></prop>
+          <prop oor:name="Description">
+            <value xml:lang="en">Returns the most recent fetch error message, for diagnostics. Empty string if no error has occurred.</value>
+          </prop>
+          <prop oor:name="Category"><value>Add-In</value></prop>
+          <prop oor:name="CompatibilityName"><value xml:lang="en">NBA_LASTERROR</value></prop>
+        </node>
+
+        <!-- =NBA_CACHECLEAR() -->
+        <node oor:name="nbaCacheClear" oor:op="replace">
+          <prop oor:name="DisplayName"><value xml:lang="en">NBA_CACHECLEAR</value></prop>
+          <prop oor:name="Description">
+            <value xml:lang="en">Clears every cached response, forcing fresh fetches. Returns the number of cache entries cleared.</value>
+          </prop>
+          <prop oor:name="Category"><value>Add-In</value></prop>
+          <prop oor:name="CompatibilityName"><value xml:lang="en">NBA_CACHECLEAR</value></prop>
+        </node>
+
+      </node>
+    </node>
+  </node>
+</oor:component-data>

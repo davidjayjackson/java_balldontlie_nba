@@ -1,0 +1,16 @@
+# Build output
+build/
+
+# LibreOffice lock files
+.~lock.*#
+
+# OS / editor cruft
+Thumbs.db
+.DS_Store
+*.swp
+
+# balldontlie API key
+balldontlie.properties
+
+# Claude Code local settings
+.claude/
