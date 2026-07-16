@@ -15,6 +15,14 @@ throttle and blow past any reasonable per-cell wait budget.
 Functions that need a paid balldontlie plan (standings, stats, box scores)
 are included for reference too -- on a free-tier key they'll show #ERR,
 which is correct, documented behavior (see NBA_LASTERROR in the sheet).
+
+The sheet also demonstrates the optional trailing api_key argument, using a
+NBA_TEAMID call that reads its key from a cell. That cell holds an obvious
+placeholder ("YOUR_API_KEY_HERE"), never a real key -- this file is public,
+so a real key baked into a cell would be a credential leak the moment it's
+committed. The placeholder is intentionally invalid, so the demo correctly
+shows #ERR (the argument really did override the environment and get
+rejected), not a silent fallback success.
 """
 import os
 import sys
@@ -79,6 +87,7 @@ def main():
         put(0, 0, "balldontlie NBA Calc Add-In - demo (Boston Celtics)")
         put(0, 1, "Configure a balldontlie API key (see README), then recalc with Ctrl+Shift+F9.")
         put(0, 2, "#LOADING means a background fetch just started - recalc again once it settles.")
+        put(0, 3, "See the bottom of this sheet for the optional api_key argument (cell-referenced).")
 
         put(0, 4, "Function")
         put(1, 4, "Live result")
@@ -200,6 +209,36 @@ def main():
         c = formula(1, row["lasterror"], f)
         doc.calculateAll()
         print("lasterror ->", c.getString())
+
+        # --- Phase 12: the optional trailing api_key argument. The key cell
+        # holds an obvious PLACEHOLDER, never a real key -- this file is
+        # public, and a real key pasted into a cell would be a credential
+        # leak the moment it's committed. The placeholder is intentionally
+        # invalid, so this correctly demonstrates the argument overriding
+        # the environment (a distinct cache entry, a fresh fetch, and a
+        # real #ERR from balldontlie rejecting the bogus key) rather than
+        # silently falling back to the environment's real key. Replace the
+        # placeholder with your own key to see it succeed. ---
+        r = bx_first + 13
+        put(0, r, "Using the api_key argument (overrides the environment for one call)")
+        r += 1
+        put(0, r, "your_api_key -- paste your own balldontlie key here to override the environment")
+        key_row = r
+        put(1, r, "YOUR_API_KEY_HERE")  # placeholder only; never a real key
+        r += 1
+        key_cell_addr = "B%d" % (key_row + 1)
+        apikey_f = '=NBA_TEAMID("Boston Celtics";%s)' % key_cell_addr
+        put(0, r, "NBA_TEAMID with explicit api_key argument (placeholder above -> expect #ERR)")
+        put(2, r, apikey_f)
+        c = formula(1, r, apikey_f)
+        print("apikey arg ->", settle(c, max_wait=30))
+        r += 1
+        f = '=NBA_LASTERROR()'
+        put(0, r, "NBA_LASTERROR (reflects the placeholder-key rejection above)")
+        put(2, r, f)
+        c = formula(1, r, f)
+        doc.calculateAll()
+        print("apikey arg lasterror ->", c.getString())
 
         # Widen columns a little for readability.
         cols = sh.Columns
