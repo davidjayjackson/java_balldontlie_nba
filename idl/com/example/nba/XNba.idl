@@ -14,13 +14,21 @@ module com { module example { module nba {
               was just started. Recalculate (F9 / Ctrl+Shift+F9) once it
               completes.</li>
           <li>"#NO_API_KEY" - no balldontlie API key could be resolved. See
-              NBA_LASTERROR and the README for the three key-resolution
-              mechanisms.</li>
+              NBA_LASTERROR and the README for the key-resolution order.</li>
           <li>"#NOT_FOUND" - the request was well-formed and reached the API,
               but no matching data exists (unknown team, empty search, etc).</li>
           <li>"#ERR" - the fetch failed persistently (network, rate limit
               exhausted, bad response). Call NBA_LASTERROR() for detail.</li>
         </ul>
+
+        Every function that talks to the API takes a trailing optional
+        <em>apiKey</em> argument (typed literally or via a cell reference).
+        When supplied, it overrides the environment for that call; when
+        omitted, the key falls back to the balldontlie.apiKey system
+        property, then the BALLDONTLIE_API_KEY environment variable, then
+        ~/.config/libreoffice-nba/balldontlie.properties. Cell functions
+        never contain the key as a bare literal by default -- passing it as
+        an argument is opt-in.
 
         Table-returning functions return a matrix (sequence of sequences);
         LibreOffice has no dynamic spill, so select the output range and
@@ -34,32 +42,50 @@ module com { module example { module nba {
 
             @param nameOrAbbrev team full name, city, name, or abbreviation
                 (case-insensitive), e.g. "Lakers" or "LAL".
+            @param apiKey optional. Overrides the environment's balldontlie
+                API key for this call. Declared as <em>any</em> so it may be
+                omitted.
             @returns the numeric team id, or a sentinel string.
          */
-        any nbaTeamId( [in] string nameOrAbbrev );
+        any nbaTeamId(
+            [in] string nameOrAbbrev,
+            [in] any apiKey );
 
         /** List every NBA team.
 
+            @param apiKey optional. Overrides the environment's balldontlie
+                API key for this call. Declared as <em>any</em> so it may be
+                omitted.
             @returns a matrix of rows: id, abbreviation, city, conference,
                 division, full_name, name.
          */
-        sequence< sequence< any > > nbaTeams();
+        sequence< sequence< any > > nbaTeams( [in] any apiKey );
 
         /** Search players by name.
 
             @param name a full or partial player name.
+            @param apiKey optional. Overrides the environment's balldontlie
+                API key for this call. Declared as <em>any</em> so it may be
+                omitted.
             @returns a matrix of rows: id, first_name, last_name, position,
                 team abbreviation. Up to 100 matches.
          */
-        sequence< sequence< any > > nbaPlayerSearch( [in] string name );
+        sequence< sequence< any > > nbaPlayerSearch(
+            [in] string name,
+            [in] any apiKey );
 
         /** Resolve a player's full name to their numeric player id (best
             match: the first result of a name search).
 
             @param fullName player name to search for, e.g. "LeBron James".
+            @param apiKey optional. Overrides the environment's balldontlie
+                API key for this call. Declared as <em>any</em> so it may be
+                omitted.
             @returns the numeric player id, or a sentinel string.
          */
-        any nbaPlayerId( [in] string fullName );
+        any nbaPlayerId(
+            [in] string fullName,
+            [in] any apiKey );
 
         /** List games for a date or a season.
 
@@ -69,12 +95,16 @@ module com { module example { module nba {
             @param teamId optional. A numeric team id (from NBA_TEAMID) to
                 filter to. Only honored in season mode. Declared as
                 <em>any</em> so it may be omitted.
+            @param apiKey optional. Overrides the environment's balldontlie
+                API key for this call. Declared as <em>any</em> so it may be
+                omitted.
             @returns a matrix of rows: date, home_team, home_score,
                 away_team, away_score, status.
          */
         sequence< sequence< any > > nbaGames(
             [in] string dateOrSeason,
-            [in] any teamId );
+            [in] any teamId,
+            [in] any apiKey );
 
         /** The most recent (or Nth most recent) result for a team in a
             season, as a formatted string.
@@ -84,35 +114,47 @@ module com { module example { module nba {
             @param nth optional. 1 = most recent game (default), 2 = second
                 most recent, etc. Declared as <em>any</em> so it may be
                 omitted.
+            @param apiKey optional. Overrides the environment's balldontlie
+                API key for this call. Declared as <em>any</em> so it may be
+                omitted.
             @returns a result string, e.g.
                 "2024-04-10 LAL 112 - 108 BOS (W)", or a sentinel string.
          */
         any nbaScore(
             [in] string season,
             [in] string abbrev,
-            [in] any nth );
+            [in] any nth,
+            [in] any apiKey );
 
         /** League standings for a season.
 
             @param season 4-digit season year, e.g. "2024".
             @param conference optional. "East" or "West" to filter.
                 Declared as <em>any</em> so it may be omitted.
+            @param apiKey optional. Overrides the environment's balldontlie
+                API key for this call. Declared as <em>any</em> so it may be
+                omitted.
             @returns a matrix of rows: conference, division, team
                 (abbreviation), wins, losses, win_pct, conference_rank.
          */
         sequence< sequence< any > > nbaStandings(
             [in] string season,
-            [in] any conference );
+            [in] any conference,
+            [in] any apiKey );
 
         /** A team's conference rank in a season.
 
             @param season 4-digit season year, e.g. "2024".
             @param abbrev team abbreviation, e.g. "LAL".
+            @param apiKey optional. Overrides the environment's balldontlie
+                API key for this call. Declared as <em>any</em> so it may be
+                omitted.
             @returns the numeric conference rank, or a sentinel string.
          */
         any nbaTeamRank(
             [in] string season,
-            [in] string abbrev );
+            [in] string abbrev,
+            [in] any apiKey );
 
         /** A player's season-average statistic.
 
@@ -122,20 +164,29 @@ module com { module example { module nba {
                 fgm, fga, fg_pct, fg3m, fg3a, fg3_pct, ftm, fta, ft_pct,
                 oreb, dreb, min. Averaged across the player's games that
                 season (simple mean, not attempt-weighted for percentages).
+            @param apiKey optional. Overrides the environment's balldontlie
+                API key for this call. Declared as <em>any</em> so it may be
+                omitted.
             @returns the numeric season average, or a sentinel string.
          */
         any nbaPlayerStat(
             [in] string season,
             [in] any id,
-            [in] string statKey );
+            [in] string statKey,
+            [in] any apiKey );
 
         /** Per-player box score for a single game.
 
             @param gameId numeric game id.
+            @param apiKey optional. Overrides the environment's balldontlie
+                API key for this call. Declared as <em>any</em> so it may be
+                omitted.
             @returns a matrix of rows: player, team, min, pts, reb, ast,
                 stl, blk, fg_pct, fg3_pct, ft_pct.
          */
-        sequence< sequence< any > > nbaBoxScore( [in] any gameId );
+        sequence< sequence< any > > nbaBoxScore(
+            [in] any gameId,
+            [in] any apiKey );
 
         /** The most recent fetch error message, for diagnostics.
 

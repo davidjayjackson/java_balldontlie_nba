@@ -64,13 +64,13 @@ public final class NbaImpl extends WeakBase
     // XNba - the actual worksheet functions                              //
     // ------------------------------------------------------------------ //
 
-    public Object nbaTeamId(String nameOrAbbrev) {
-        final String apiKey = NbaClient.resolveApiKey();
+    public Object nbaTeamId(String nameOrAbbrev, Object apiKeyArg) {
+        final String apiKey = NbaClient.resolveApiKey(optString(apiKeyArg));
         if (apiKey == null) return NO_API_KEY;
         final String query = trim(nameOrAbbrev);
         if (query.isEmpty()) return NOT_FOUND;
 
-        NbaCache.Result r = NbaCache.get("teams", TTL_TEAMS, new NbaCache.Fetcher() {
+        NbaCache.Result r = NbaCache.get(teamsKey(apiKey), TTL_TEAMS, new NbaCache.Fetcher() {
             public Object fetch() throws Exception { return NbaClient.teams(apiKey); }
         });
         if (LOADING.equals(status(r))) return LOADING;
@@ -80,11 +80,11 @@ public final class NbaImpl extends WeakBase
         return team == null ? NOT_FOUND : team.get("id");
     }
 
-    public Object[][] nbaTeams() {
-        final String apiKey = NbaClient.resolveApiKey();
+    public Object[][] nbaTeams(Object apiKeyArg) {
+        final String apiKey = NbaClient.resolveApiKey(optString(apiKeyArg));
         if (apiKey == null) return sentinelTable(NO_API_KEY);
 
-        NbaCache.Result r = NbaCache.get("teams", TTL_TEAMS, new NbaCache.Fetcher() {
+        NbaCache.Result r = NbaCache.get(teamsKey(apiKey), TTL_TEAMS, new NbaCache.Fetcher() {
             public Object fetch() throws Exception { return NbaClient.teams(apiKey); }
         });
         if (LOADING.equals(status(r))) return sentinelTable(LOADING);
@@ -106,13 +106,13 @@ public final class NbaImpl extends WeakBase
         return out;
     }
 
-    public Object[][] nbaPlayerSearch(String name) {
-        final String apiKey = NbaClient.resolveApiKey();
+    public Object[][] nbaPlayerSearch(String name, Object apiKeyArg) {
+        final String apiKey = NbaClient.resolveApiKey(optString(apiKeyArg));
         if (apiKey == null) return sentinelTable(NO_API_KEY);
         final String query = trim(name);
         if (query.isEmpty()) return sentinelTable(NOT_FOUND);
         final String term = apiSearchTerm(query);
-        String key = "players:search=" + term.toLowerCase();
+        String key = playersKey(term, apiKey);
 
         NbaCache.Result r = NbaCache.get(key, TTL_PLAYERS, new NbaCache.Fetcher() {
             public Object fetch() throws Exception { return NbaClient.playersSearch(term, apiKey); }
@@ -134,13 +134,13 @@ public final class NbaImpl extends WeakBase
         return out;
     }
 
-    public Object nbaPlayerId(String fullName) {
-        final String apiKey = NbaClient.resolveApiKey();
+    public Object nbaPlayerId(String fullName, Object apiKeyArg) {
+        final String apiKey = NbaClient.resolveApiKey(optString(apiKeyArg));
         if (apiKey == null) return NO_API_KEY;
         final String query = trim(fullName);
         if (query.isEmpty()) return NOT_FOUND;
         final String term = apiSearchTerm(query);
-        String key = "players:search=" + term.toLowerCase();
+        String key = playersKey(term, apiKey);
 
         NbaCache.Result r = NbaCache.get(key, TTL_PLAYERS, new NbaCache.Fetcher() {
             public Object fetch() throws Exception { return NbaClient.playersSearch(term, apiKey); }
@@ -182,8 +182,8 @@ public final class NbaImpl extends WeakBase
         return full;
     }
 
-    public Object[][] nbaGames(String dateOrSeason, Object teamIdArg) {
-        final String apiKey = NbaClient.resolveApiKey();
+    public Object[][] nbaGames(String dateOrSeason, Object teamIdArg, Object apiKeyArg) {
+        final String apiKey = NbaClient.resolveApiKey(optString(apiKeyArg));
         if (apiKey == null) return sentinelTable(NO_API_KEY);
         final String ds = trim(dateOrSeason);
         if (ds.isEmpty()) return sentinelTable(NOT_FOUND);
@@ -191,7 +191,7 @@ public final class NbaImpl extends WeakBase
         final Long teamId = toLong(optDouble(teamIdArg));
 
         String key = (isDate ? "games:date=" : "games:season=") + ds
-                + (teamId != null ? ";team=" + teamId : "");
+                + (teamId != null ? ";team=" + teamId : "") + ";k=" + keyTag(apiKey);
 
         NbaCache.Result r = NbaCache.get(key, TTL_GAMES, new NbaCache.Fetcher() {
             public Object fetch() throws Exception {
@@ -226,14 +226,14 @@ public final class NbaImpl extends WeakBase
         return out;
     }
 
-    public Object nbaScore(String season, String abbrev, Object nthArg) {
-        final String apiKey = NbaClient.resolveApiKey();
+    public Object nbaScore(String season, String abbrev, Object nthArg, Object apiKeyArg) {
+        final String apiKey = NbaClient.resolveApiKey(optString(apiKeyArg));
         if (apiKey == null) return NO_API_KEY;
         final String seasonTrim = trim(season);
         final String abbrevTrim = trim(abbrev);
         if (seasonTrim.isEmpty() || abbrevTrim.isEmpty()) return NOT_FOUND;
 
-        NbaCache.Result teamsR = NbaCache.get("teams", TTL_TEAMS, new NbaCache.Fetcher() {
+        NbaCache.Result teamsR = NbaCache.get(teamsKey(apiKey), TTL_TEAMS, new NbaCache.Fetcher() {
             public Object fetch() throws Exception { return NbaClient.teams(apiKey); }
         });
         if (LOADING.equals(status(teamsR))) return LOADING;
@@ -244,7 +244,7 @@ public final class NbaImpl extends WeakBase
         final Long teamId = toLong(team.get("id"));
         String teamAbbrev = str(team.get("abbreviation"));
 
-        String key = "games:season=" + seasonTrim + ";team=" + teamId;
+        String key = "games:season=" + seasonTrim + ";team=" + teamId + ";k=" + keyTag(apiKey);
         NbaCache.Result gamesR = NbaCache.get(key, TTL_GAMES, new NbaCache.Fetcher() {
             public Object fetch() throws Exception { return NbaClient.gamesBySeason(seasonTrim, teamId, apiKey); }
         });
@@ -278,14 +278,14 @@ public final class NbaImpl extends WeakBase
                 + " - " + fmtNum(oppScore) + " " + oppAbbrev + " (" + result + ")";
     }
 
-    public Object[][] nbaStandings(String season, Object conferenceArg) {
-        final String apiKey = NbaClient.resolveApiKey();
+    public Object[][] nbaStandings(String season, Object conferenceArg, Object apiKeyArg) {
+        final String apiKey = NbaClient.resolveApiKey(optString(apiKeyArg));
         if (apiKey == null) return sentinelTable(NO_API_KEY);
         final String seasonTrim = trim(season);
         if (seasonTrim.isEmpty()) return sentinelTable(NOT_FOUND);
         final String conf = optString(conferenceArg);
 
-        String key = "standings:season=" + seasonTrim;
+        String key = standingsKey(seasonTrim, apiKey);
         NbaCache.Result r = NbaCache.get(key, TTL_STANDINGS, new NbaCache.Fetcher() {
             public Object fetch() throws Exception { return NbaClient.standings(seasonTrim, apiKey); }
         });
@@ -317,14 +317,14 @@ public final class NbaImpl extends WeakBase
         return out;
     }
 
-    public Object nbaTeamRank(String season, String abbrev) {
-        final String apiKey = NbaClient.resolveApiKey();
+    public Object nbaTeamRank(String season, String abbrev, Object apiKeyArg) {
+        final String apiKey = NbaClient.resolveApiKey(optString(apiKeyArg));
         if (apiKey == null) return NO_API_KEY;
         final String seasonTrim = trim(season);
         final String abbrevTrim = trim(abbrev);
         if (seasonTrim.isEmpty() || abbrevTrim.isEmpty()) return NOT_FOUND;
 
-        String key = "standings:season=" + seasonTrim;
+        String key = standingsKey(seasonTrim, apiKey);
         NbaCache.Result r = NbaCache.get(key, TTL_STANDINGS, new NbaCache.Fetcher() {
             public Object fetch() throws Exception { return NbaClient.standings(seasonTrim, apiKey); }
         });
@@ -341,8 +341,8 @@ public final class NbaImpl extends WeakBase
         return NOT_FOUND;
     }
 
-    public Object nbaPlayerStat(String season, Object idArg, String statKey) {
-        final String apiKey = NbaClient.resolveApiKey();
+    public Object nbaPlayerStat(String season, Object idArg, String statKey, Object apiKeyArg) {
+        final String apiKey = NbaClient.resolveApiKey(optString(apiKeyArg));
         if (apiKey == null) return NO_API_KEY;
         final String seasonTrim = trim(season);
         final String key2 = trim(statKey);
@@ -350,7 +350,7 @@ public final class NbaImpl extends WeakBase
         if (seasonTrim.isEmpty() || key2.isEmpty() || idNum == null) return NOT_FOUND;
         final String playerId = fmtNum(idNum);
 
-        String key = "stats:season=" + seasonTrim + ";player=" + playerId;
+        String key = "stats:season=" + seasonTrim + ";player=" + playerId + ";k=" + keyTag(apiKey);
         NbaCache.Result r = NbaCache.get(key, TTL_STATS, new NbaCache.Fetcher() {
             public Object fetch() throws Exception { return NbaClient.statsBySeasonPlayer(seasonTrim, playerId, apiKey); }
         });
@@ -371,14 +371,14 @@ public final class NbaImpl extends WeakBase
         return count == 0 ? NOT_FOUND : (Object) Double.valueOf(sum / count);
     }
 
-    public Object[][] nbaBoxScore(Object gameIdArg) {
-        final String apiKey = NbaClient.resolveApiKey();
+    public Object[][] nbaBoxScore(Object gameIdArg, Object apiKeyArg) {
+        final String apiKey = NbaClient.resolveApiKey(optString(apiKeyArg));
         if (apiKey == null) return sentinelTable(NO_API_KEY);
         Double gidNum = optDouble(gameIdArg);
         if (gidNum == null) return sentinelTable(NOT_FOUND);
         final String gameId = fmtNum(gidNum);
 
-        String key = "stats:game=" + gameId;
+        String key = "stats:game=" + gameId + ";k=" + keyTag(apiKey);
         NbaCache.Result r = NbaCache.get(key, TTL_STATS, new NbaCache.Fetcher() {
             public Object fetch() throws Exception { return NbaClient.statsByGame(gameId, apiKey); }
         });
@@ -513,6 +513,27 @@ public final class NbaImpl extends WeakBase
         return String.valueOf(d);
     }
 
+    /**
+     * A short, stable fingerprint of an API key, appended to cache keys so
+     * that two different keys (e.g. a formula-supplied key overriding the
+     * environment) never share cached data or a cached error/cooldown state.
+     */
+    private static String keyTag(String apiKey) {
+        return Integer.toHexString(apiKey.hashCode());
+    }
+
+    private static String teamsKey(String apiKey) {
+        return "teams;k=" + keyTag(apiKey);
+    }
+
+    private static String playersKey(String term, String apiKey) {
+        return "players:search=" + term.toLowerCase() + ";k=" + keyTag(apiKey);
+    }
+
+    private static String standingsKey(String season, String apiKey) {
+        return "standings:season=" + season + ";k=" + keyTag(apiKey);
+    }
+
     // ------------------------------------------------------------------ //
     // Argument / value helpers                                           //
     // ------------------------------------------------------------------ //
@@ -631,33 +652,45 @@ public final class NbaImpl extends WeakBase
         return "";
     }
 
+    private static final String ARG_KEY = "api_key";
+
     private static String[] argNames(String prog) {
-        if ("nbaTeamId".equals(prog)) return new String[] { "name_or_abbrev" };
-        if ("nbaPlayerSearch".equals(prog)) return new String[] { "name" };
-        if ("nbaPlayerId".equals(prog)) return new String[] { "full_name" };
-        if ("nbaGames".equals(prog)) return new String[] { "date_or_season", "team_id" };
-        if ("nbaScore".equals(prog)) return new String[] { "season", "abbrev", "nth" };
-        if ("nbaStandings".equals(prog)) return new String[] { "season", "conference" };
-        if ("nbaTeamRank".equals(prog)) return new String[] { "season", "abbrev" };
-        if ("nbaPlayerStat".equals(prog)) return new String[] { "season", "id", "stat_key" };
-        if ("nbaBoxScore".equals(prog)) return new String[] { "game_id" };
+        if ("nbaTeamId".equals(prog)) return new String[] { "name_or_abbrev", ARG_KEY };
+        if ("nbaTeams".equals(prog)) return new String[] { ARG_KEY };
+        if ("nbaPlayerSearch".equals(prog)) return new String[] { "name", ARG_KEY };
+        if ("nbaPlayerId".equals(prog)) return new String[] { "full_name", ARG_KEY };
+        if ("nbaGames".equals(prog)) return new String[] { "date_or_season", "team_id", ARG_KEY };
+        if ("nbaScore".equals(prog)) return new String[] { "season", "abbrev", "nth", ARG_KEY };
+        if ("nbaStandings".equals(prog)) return new String[] { "season", "conference", ARG_KEY };
+        if ("nbaTeamRank".equals(prog)) return new String[] { "season", "abbrev", ARG_KEY };
+        if ("nbaPlayerStat".equals(prog)) return new String[] { "season", "id", "stat_key", ARG_KEY };
+        if ("nbaBoxScore".equals(prog)) return new String[] { "game_id", ARG_KEY };
         return new String[0];
     }
 
+    private static final String ARG_KEY_DESC =
+        "Optional. balldontlie API key for this call; overrides the environment "
+        + "(system property, BALLDONTLIE_API_KEY, or properties file) when supplied. "
+        + "May reference a cell.";
+
     private static String[] argDescriptions(String prog) {
         if ("nbaTeamId".equals(prog)) {
-            return new String[] { "Team full name, city, name, or abbreviation, e.g. \"Lakers\" or \"LAL\"." };
+            return new String[] { "Team full name, city, name, or abbreviation, e.g. \"Lakers\" or \"LAL\".", ARG_KEY_DESC };
+        }
+        if ("nbaTeams".equals(prog)) {
+            return new String[] { ARG_KEY_DESC };
         }
         if ("nbaPlayerSearch".equals(prog)) {
-            return new String[] { "A full or partial player name." };
+            return new String[] { "A full or partial player name.", ARG_KEY_DESC };
         }
         if ("nbaPlayerId".equals(prog)) {
-            return new String[] { "Player name to search for, e.g. \"LeBron James\"." };
+            return new String[] { "Player name to search for, e.g. \"LeBron James\".", ARG_KEY_DESC };
         }
         if ("nbaGames".equals(prog)) {
             return new String[] {
                 "An ISO date \"YYYY-MM-DD\" (games on that date) or a 4-digit season year \"YYYY\" (games in that season).",
                 "Optional. A numeric team id from NBA_TEAMID to filter to (season mode).",
+                ARG_KEY_DESC,
             };
         }
         if ("nbaScore".equals(prog)) {
@@ -665,26 +698,29 @@ public final class NbaImpl extends WeakBase
                 "4-digit season year, e.g. \"2024\".",
                 "Team abbreviation, e.g. \"LAL\".",
                 "Optional. 1 = most recent game (default), 2 = second most recent, etc.",
+                ARG_KEY_DESC,
             };
         }
         if ("nbaStandings".equals(prog)) {
             return new String[] {
                 "4-digit season year, e.g. \"2024\".",
                 "Optional. \"East\" or \"West\" to filter to one conference.",
+                ARG_KEY_DESC,
             };
         }
         if ("nbaTeamRank".equals(prog)) {
-            return new String[] { "4-digit season year, e.g. \"2024\".", "Team abbreviation, e.g. \"LAL\"." };
+            return new String[] { "4-digit season year, e.g. \"2024\".", "Team abbreviation, e.g. \"LAL\".", ARG_KEY_DESC };
         }
         if ("nbaPlayerStat".equals(prog)) {
             return new String[] {
                 "4-digit season year, e.g. \"2024\".",
                 "Numeric player id (from NBA_PLAYERID).",
                 "One of: pts, reb, ast, stl, blk, turnover, pf, fgm, fga, fg_pct, fg3m, fg3a, fg3_pct, ftm, fta, ft_pct, oreb, dreb, min.",
+                ARG_KEY_DESC,
             };
         }
         if ("nbaBoxScore".equals(prog)) {
-            return new String[] { "Numeric game id." };
+            return new String[] { "Numeric game id.", ARG_KEY_DESC };
         }
         return new String[0];
     }

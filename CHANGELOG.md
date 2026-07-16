@@ -6,6 +6,23 @@ documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-07-16
+
+### Added
+- Every data function (all except `NBA_LASTERROR`/`NBA_CACHECLEAR`) now takes
+  a trailing optional `api_key` argument, typed literally or via a cell
+  reference (e.g. `=NBA_TEAMID("Lakers"; $B$1)`). When supplied it overrides
+  the environment (system property, `BALLDONTLIE_API_KEY`, properties file)
+  for that call; when omitted, resolution falls back to those three
+  mechanisms exactly as before.
+- Cache keys now include a fingerprint of the resolved API key, so two
+  different keys (e.g. switching via the new argument) never share cached
+  data or a cached error/cooldown state.
+
+### Notes
+- Backward compatible: every existing formula continues to work unchanged,
+  since the new argument is trailing and optional.
+
 ## [1.0.0] - 2026-07-15
 
 First release. A Java UNO add-in (`com.sun.star.sheet.AddIn`) exposing

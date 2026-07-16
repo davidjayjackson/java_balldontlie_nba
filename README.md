@@ -10,21 +10,26 @@ the [balldontlie](https://www.balldontlie.io/) API as worksheet functions.
 
 | Function | Signature | Returns |
 |----------|-----------|---------|
-| `NBA_TEAMID`       | `NBA_TEAMID(name_or_abbrev)`                    | numeric team id |
-| `NBA_TEAMS`        | `NBA_TEAMS()`                                     | spillable array: id, abbreviation, city, conference, division, full_name, name |
-| `NBA_PLAYERSEARCH` | `NBA_PLAYERSEARCH(name)`                          | spillable array: id, first_name, last_name, position, team (up to 100 matches) |
-| `NBA_PLAYERID`     | `NBA_PLAYERID(full_name)`                         | numeric player id (best match) |
-| `NBA_GAMES`        | `NBA_GAMES(date_or_season; [team_id])`            | spillable array: date, home_team, home_score, away_team, away_score, status |
-| `NBA_SCORE`        | `NBA_SCORE(season; abbrev; [nth])`                | result string, e.g. `"2024-04-10 LAL 112 - 108 BOS (W)"` |
-| `NBA_STANDINGS`    | `NBA_STANDINGS(season; [conference])`             | spillable array: conference, division, team, wins, losses, win_pct, conference_rank |
-| `NBA_TEAMRANK`     | `NBA_TEAMRANK(season; abbrev)`                    | numeric conference rank |
-| `NBA_PLAYERSTAT`   | `NBA_PLAYERSTAT(season; id; stat_key)`            | season-average stat value |
-| `NBA_BOXSCORE`     | `NBA_BOXSCORE(game_id)`                           | spillable array: player, team, min, pts, reb, ast, stl, blk, fg_pct, fg3_pct, ft_pct |
-| `NBA_LASTERROR`    | `NBA_LASTERROR()`                                 | most recent fetch error message (diagnostics) |
-| `NBA_CACHECLEAR`   | `NBA_CACHECLEAR()`                                | clears the cache; returns the count cleared |
+| `NBA_TEAMID`       | `NBA_TEAMID(name_or_abbrev; [api_key])`             | numeric team id |
+| `NBA_TEAMS`        | `NBA_TEAMS([api_key])`                              | spillable array: id, abbreviation, city, conference, division, full_name, name |
+| `NBA_PLAYERSEARCH` | `NBA_PLAYERSEARCH(name; [api_key])`                 | spillable array: id, first_name, last_name, position, team (up to 100 matches) |
+| `NBA_PLAYERID`     | `NBA_PLAYERID(full_name; [api_key])`                | numeric player id (best match) |
+| `NBA_GAMES`        | `NBA_GAMES(date_or_season; [team_id]; [api_key])`   | spillable array: date, home_team, home_score, away_team, away_score, status |
+| `NBA_SCORE`        | `NBA_SCORE(season; abbrev; [nth]; [api_key])`       | result string, e.g. `"2024-04-10 LAL 112 - 108 BOS (W)"` |
+| `NBA_STANDINGS`    | `NBA_STANDINGS(season; [conference]; [api_key])`    | spillable array: conference, division, team, wins, losses, win_pct, conference_rank |
+| `NBA_TEAMRANK`     | `NBA_TEAMRANK(season; abbrev; [api_key])`           | numeric conference rank |
+| `NBA_PLAYERSTAT`   | `NBA_PLAYERSTAT(season; id; stat_key; [api_key])`   | season-average stat value |
+| `NBA_BOXSCORE`     | `NBA_BOXSCORE(game_id; [api_key])`                  | spillable array: player, team, min, pts, reb, ast, stl, blk, fg_pct, fg3_pct, ft_pct |
+| `NBA_LASTERROR`    | `NBA_LASTERROR()`                                   | most recent fetch error message (diagnostics) |
+| `NBA_CACHECLEAR`   | `NBA_CACHECLEAR()`                                  | clears the cache; returns the count cleared |
 
 > In Calc's UI, arguments are separated by **semicolons**:
 > `=NBA_SCORE("2024"; "LAL")`.
+>
+> Every data function takes a trailing optional **`api_key`** — supply it to
+> override the environment for that one call, typed literally or (recommended,
+> so the key isn't visible in every formula) as a cell reference:
+> `=NBA_SCORE("2024"; "LAL"; ; $B$1)`.
 
 ---
 
@@ -57,26 +62,34 @@ store (up to 1000 entries, oldest evicted first) that lives for the life of
 the LibreOffice session — call `NBA_CACHECLEAR()` to force fresh data, or
 restart LibreOffice.
 
-## Provide the balldontlie API key (never hardcoded, never in a formula)
+## Provide the balldontlie API key (never hardcoded)
 
 balldontlie has required a free API key on every request since July 2026.
 Get one at <https://www.balldontlie.io/>. The key is resolved, in this
-priority order, and is **never** an argument in the cell formulas above:
+priority order:
 
-1. **Java system property** `balldontlie.apiKey` — pass `-Dballdontlie.apiKey=...`
+1. **The `api_key` function argument** — the optional trailing argument of
+   every data function. Type it literally, or (recommended, so the key isn't
+   spelled out in every formula) reference a cell:
+   `=NBA_TEAMID("Lakers"; $B$1)`. Wins when supplied, overriding everything
+   below for that one call.
+2. **Java system property** `balldontlie.apiKey` — pass `-Dballdontlie.apiKey=...`
    when launching `soffice`.
-2. **Environment variable** `BALLDONTLIE_API_KEY` — set it, then launch
+3. **Environment variable** `BALLDONTLIE_API_KEY` — set it, then launch
    `soffice` from that same shell (or set it persistently and restart
    LibreOffice).
-3. **Properties file** at `~/.config/libreoffice-nba/balldontlie.properties`:
+4. **Properties file** at `~/.config/libreoffice-nba/balldontlie.properties`:
    ```properties
    apiKey=your_key_here
    ```
    This is the most convenient option since it doesn't depend on how
    LibreOffice was launched.
 
-If none of the three resolve, every data function returns `#NO_API_KEY`
-instead of failing silently or throwing.
+If none of the four resolve, every data function returns `#NO_API_KEY`
+instead of failing silently or throwing. Different keys are cached
+independently (the cache key includes a fingerprint of the resolved key), so
+switching keys — e.g. via the argument — doesn't reuse another key's cached
+data or cached error state.
 
 ```bash
 # Linux/macOS, environment variable route:
@@ -141,6 +154,7 @@ the environment-variable route).
 =NBA_BOXSCORE(15908)                      -> spills that game's per-player box score (array formula)
 =NBA_LASTERROR()                          -> "" (or the last failure's detail)
 =NBA_CACHECLEAR()                         -> number of entries cleared
+=NBA_TEAMID("Lakers"; $B$1)               -> key taken from cell B1 instead of the environment
 ```
 
 A ready-made example workbook is at

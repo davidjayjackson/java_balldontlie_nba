@@ -8,7 +8,7 @@
     <node oor:name="com.example.nba.NbaImpl" oor:op="replace">
       <node oor:name="AddInFunctions">
 
-        <!-- =NBA_TEAMID(name_or_abbrev) -->
+        <!-- =NBA_TEAMID(name_or_abbrev; [api_key]) -->
         <node oor:name="nbaTeamId" oor:op="replace">
           <prop oor:name="DisplayName"><value xml:lang="en">NBA_TEAMID</value></prop>
           <prop oor:name="Description">
@@ -23,10 +23,16 @@
                 <value xml:lang="en">Team full name, city, name, or abbreviation, e.g. "Lakers" or "LAL".</value>
               </prop>
             </node>
+            <node oor:name="apiKey" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">api_key</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">Optional. balldontlie API key for this call; overrides the environment (system property, BALLDONTLIE_API_KEY, or properties file) when supplied. May reference a cell.</value>
+              </prop>
+            </node>
           </node>
         </node>
 
-        <!-- =NBA_TEAMS() -->
+        <!-- =NBA_TEAMS([api_key]) -->
         <node oor:name="nbaTeams" oor:op="replace">
           <prop oor:name="DisplayName"><value xml:lang="en">NBA_TEAMS</value></prop>
           <prop oor:name="Description">
@@ -34,9 +40,17 @@
           </prop>
           <prop oor:name="Category"><value>Add-In</value></prop>
           <prop oor:name="CompatibilityName"><value xml:lang="en">NBA_TEAMS</value></prop>
+          <node oor:name="Parameters">
+            <node oor:name="apiKey" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">api_key</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">Optional. balldontlie API key for this call; overrides the environment (system property, BALLDONTLIE_API_KEY, or properties file) when supplied. May reference a cell.</value>
+              </prop>
+            </node>
+          </node>
         </node>
 
-        <!-- =NBA_PLAYERSEARCH(name) -->
+        <!-- =NBA_PLAYERSEARCH(name; [api_key]) -->
         <node oor:name="nbaPlayerSearch" oor:op="replace">
           <prop oor:name="DisplayName"><value xml:lang="en">NBA_PLAYERSEARCH</value></prop>
           <prop oor:name="Description">
@@ -49,10 +63,16 @@
               <prop oor:name="DisplayName"><value xml:lang="en">name</value></prop>
               <prop oor:name="Description"><value xml:lang="en">A full or partial player name.</value></prop>
             </node>
+            <node oor:name="apiKey" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">api_key</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">Optional. balldontlie API key for this call; overrides the environment (system property, BALLDONTLIE_API_KEY, or properties file) when supplied. May reference a cell.</value>
+              </prop>
+            </node>
           </node>
         </node>
 
-        <!-- =NBA_PLAYERID(full_name) -->
+        <!-- =NBA_PLAYERID(full_name; [api_key]) -->
         <node oor:name="nbaPlayerId" oor:op="replace">
           <prop oor:name="DisplayName"><value xml:lang="en">NBA_PLAYERID</value></prop>
           <prop oor:name="Description">
@@ -65,10 +85,16 @@
               <prop oor:name="DisplayName"><value xml:lang="en">full_name</value></prop>
               <prop oor:name="Description"><value xml:lang="en">Player name to search for, e.g. "LeBron James".</value></prop>
             </node>
+            <node oor:name="apiKey" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">api_key</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">Optional. balldontlie API key for this call; overrides the environment (system property, BALLDONTLIE_API_KEY, or properties file) when supplied. May reference a cell.</value>
+              </prop>
+            </node>
           </node>
         </node>
 
-        <!-- =NBA_GAMES(date_or_season; [team_id]) -->
+        <!-- =NBA_GAMES(date_or_season; [team_id]; [api_key]) -->
         <node oor:name="nbaGames" oor:op="replace">
           <prop oor:name="DisplayName"><value xml:lang="en">NBA_GAMES</value></prop>
           <prop oor:name="Description">
@@ -89,10 +115,16 @@
                 <value xml:lang="en">Optional. A numeric team id (from NBA_TEAMID) to filter to. Only honored in season mode.</value>
               </prop>
             </node>
+            <node oor:name="apiKey" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">api_key</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">Optional. balldontlie API key for this call; overrides the environment (system property, BALLDONTLIE_API_KEY, or properties file) when supplied. May reference a cell.</value>
+              </prop>
+            </node>
           </node>
         </node>
 
-        <!-- =NBA_SCORE(season; abbrev; [nth]) -->
+        <!-- =NBA_SCORE(season; abbrev; [nth]; [api_key]) -->
         <node oor:name="nbaScore" oor:op="replace">
           <prop oor:name="DisplayName"><value xml:lang="en">NBA_SCORE</value></prop>
           <prop oor:name="Description">
@@ -115,10 +147,16 @@
                 <value xml:lang="en">Optional. 1 = most recent game (default), 2 = second most recent, etc.</value>
               </prop>
             </node>
+            <node oor:name="apiKey" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">api_key</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">Optional. balldontlie API key for this call; overrides the environment (system property, BALLDONTLIE_API_KEY, or properties file) when supplied. May reference a cell.</value>
+              </prop>
+            </node>
           </node>
         </node>
 
-        <!-- =NBA_STANDINGS(season; [conference]) -->
+        <!-- =NBA_STANDINGS(season; [conference]; [api_key]) -->
         <node oor:name="nbaStandings" oor:op="replace">
           <prop oor:name="DisplayName"><value xml:lang="en">NBA_STANDINGS</value></prop>
           <prop oor:name="Description">
@@ -135,10 +173,16 @@
               <prop oor:name="DisplayName"><value xml:lang="en">conference</value></prop>
               <prop oor:name="Description"><value xml:lang="en">Optional. "East" or "West" to filter to one conference.</value></prop>
             </node>
+            <node oor:name="apiKey" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">api_key</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">Optional. balldontlie API key for this call; overrides the environment (system property, BALLDONTLIE_API_KEY, or properties file) when supplied. May reference a cell.</value>
+              </prop>
+            </node>
           </node>
         </node>
 
-        <!-- =NBA_TEAMRANK(season; abbrev) -->
+        <!-- =NBA_TEAMRANK(season; abbrev; [api_key]) -->
         <node oor:name="nbaTeamRank" oor:op="replace">
           <prop oor:name="DisplayName"><value xml:lang="en">NBA_TEAMRANK</value></prop>
           <prop oor:name="Description">
@@ -155,10 +199,16 @@
               <prop oor:name="DisplayName"><value xml:lang="en">abbrev</value></prop>
               <prop oor:name="Description"><value xml:lang="en">Team abbreviation, e.g. "LAL".</value></prop>
             </node>
+            <node oor:name="apiKey" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">api_key</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">Optional. balldontlie API key for this call; overrides the environment (system property, BALLDONTLIE_API_KEY, or properties file) when supplied. May reference a cell.</value>
+              </prop>
+            </node>
           </node>
         </node>
 
-        <!-- =NBA_PLAYERSTAT(season; id; stat_key) -->
+        <!-- =NBA_PLAYERSTAT(season; id; stat_key; [api_key]) -->
         <node oor:name="nbaPlayerStat" oor:op="replace">
           <prop oor:name="DisplayName"><value xml:lang="en">NBA_PLAYERSTAT</value></prop>
           <prop oor:name="Description">
@@ -181,10 +231,16 @@
                 <value xml:lang="en">One of: pts, reb, ast, stl, blk, turnover, pf, fgm, fga, fg_pct, fg3m, fg3a, fg3_pct, ftm, fta, ft_pct, oreb, dreb, min.</value>
               </prop>
             </node>
+            <node oor:name="apiKey" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">api_key</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">Optional. balldontlie API key for this call; overrides the environment (system property, BALLDONTLIE_API_KEY, or properties file) when supplied. May reference a cell.</value>
+              </prop>
+            </node>
           </node>
         </node>
 
-        <!-- =NBA_BOXSCORE(game_id) -->
+        <!-- =NBA_BOXSCORE(game_id; [api_key]) -->
         <node oor:name="nbaBoxScore" oor:op="replace">
           <prop oor:name="DisplayName"><value xml:lang="en">NBA_BOXSCORE</value></prop>
           <prop oor:name="Description">
@@ -196,6 +252,12 @@
             <node oor:name="gameId" oor:op="replace">
               <prop oor:name="DisplayName"><value xml:lang="en">game_id</value></prop>
               <prop oor:name="Description"><value xml:lang="en">Numeric game id.</value></prop>
+            </node>
+            <node oor:name="apiKey" oor:op="replace">
+              <prop oor:name="DisplayName"><value xml:lang="en">api_key</value></prop>
+              <prop oor:name="Description">
+                <value xml:lang="en">Optional. balldontlie API key for this call; overrides the environment (system property, BALLDONTLIE_API_KEY, or properties file) when supplied. May reference a cell.</value>
+              </prop>
             </node>
           </node>
         </node>

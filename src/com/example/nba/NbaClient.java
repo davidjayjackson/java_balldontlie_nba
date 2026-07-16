@@ -57,8 +57,17 @@ final class NbaClient {
     // API key resolution                                                 //
     // ------------------------------------------------------------------ //
 
-    /** Resolve the balldontlie API key, or {@code null} if none is configured. */
-    static String resolveApiKey() {
+    /**
+     * Resolve the balldontlie API key, or {@code null} if none is configured.
+     *
+     * @param explicit an API key supplied directly as a formula argument; if
+     *                 non-blank it wins outright, bypassing every other
+     *                 mechanism below.
+     */
+    static String resolveApiKey(String explicit) {
+        if (isSet(explicit)) {
+            return explicit.trim();
+        }
         String k = System.getProperty("balldontlie.apiKey");
         if (isSet(k)) {
             return k.trim();
