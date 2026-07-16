@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="balldontlie NBA Calc Add-In" width="100%">
+</p>
+
 # balldontlie NBA Calc Add-In
 
 A LibreOffice Calc add-in (UNO component, **Java**, MIT licensed) exposing
