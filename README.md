@@ -113,6 +113,22 @@ should rarely hit the limit — but expect a fresh, uncached formula to take
 up to ~13s to resolve out of `#LOADING` if you're issuing several different
 requests in a row.
 
+## Install (prebuilt)
+
+Download `NBA.oxt` from the [latest release](https://github.com/davidjayjackson/java_balldontlie_nba/releases/latest)
+(currently [v1.0.0](https://github.com/davidjayjackson/java_balldontlie_nba/releases/tag/v1.0.0),
+[direct link](https://github.com/davidjayjackson/java_balldontlie_nba/releases/latest/download/NBA.oxt))
+and install it — no build required:
+
+```bash
+mkdir -p ~/.config/libreoffice-nba
+echo 'apiKey=your_key' > ~/.config/libreoffice-nba/balldontlie.properties   # never hardcoded
+"$LO_HOME/program/unopkg" add NBA.oxt
+```
+
+See "Provide the balldontlie API key" above for the other resolution
+mechanisms. Skip to [Try it](#try-it) below.
+
 ## Build the .oxt
 
 ```bash
