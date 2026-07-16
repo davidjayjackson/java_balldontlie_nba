@@ -143,6 +143,16 @@ the environment-variable route).
 =NBA_CACHECLEAR()                         -> number of entries cleared
 ```
 
+A ready-made example workbook is at
+[`test/nba_demo.ods`](test/nba_demo.ods) — every function above, built around
+the Boston Celtics (2023-24 championship season). Live results are baked in
+from a real run (e.g. `NBA_SCORE("2023"; "BOS")` →
+`"2024-06-17 BOS 106 - 88 DAL (W)"`, the Finals-clinching game), but since the
+cache is per-session, reopening it will show `#LOADING` again until you
+configure your own API key and recalculate (Ctrl+Shift+F9, a couple of times
+since fetches are async). Regenerate it with `tools/build_demo.py` against a
+headless LibreOffice instance.
+
 ## Behavior notes
 
 - **Multi-cell / spilling.** LibreOffice has no dynamic spill: to see every
