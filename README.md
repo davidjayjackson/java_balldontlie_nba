@@ -10,7 +10,8 @@ the [balldontlie](https://www.balldontlie.io/) API as worksheet functions.
 
 > New here? [docs/TUTORIAL.md](docs/TUTORIAL.md) is a step-by-step
 > walkthrough — install, configure your API key, and build a working
-> one-team dashboard. This README is the function reference.
+> one-team dashboard ([PDF version](docs/TUTORIAL.pdf)). This README is
+> the function reference.
 
 | Function | Signature | Returns |
 |----------|-----------|---------|
