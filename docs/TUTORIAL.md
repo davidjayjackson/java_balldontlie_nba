@@ -1,5 +1,7 @@
 # Tutorial: building an NBA dashboard in LibreOffice Calc
 
+← Back to the [project README](../README.md) (function reference and overview).
+
 This is a hands-on walkthrough for the balldontlie NBA Calc add-in. The
 [README](../README.md) is the function reference and [INSTALL.md](INSTALL.md)
 is the build guide — this document instead walks you, step by step, from
