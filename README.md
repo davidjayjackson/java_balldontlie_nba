@@ -8,6 +8,10 @@ A LibreOffice Calc add-in (UNO component, **Java**, MIT licensed) exposing
 NBA teams, games, standings, player search, and player/game statistics from
 the [balldontlie](https://www.balldontlie.io/) API as worksheet functions.
 
+> New here? [docs/TUTORIAL.md](docs/TUTORIAL.md) is a step-by-step
+> walkthrough — install, configure your API key, and build a working
+> one-team dashboard. This README is the function reference.
+
 | Function | Signature | Returns |
 |----------|-----------|---------|
 | `NBA_TEAMID`       | `NBA_TEAMID(name_or_abbrev; [api_key])`             | numeric team id |
